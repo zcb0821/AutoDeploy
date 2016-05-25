@@ -1,0 +1,26 @@
+<div class="ui large fixed top menu transition">
+    <div class="ui container">
+        <a class="item" href="{% url 'index' %}">
+            大数据应用系统开发运行平台
+        </a>
+        <div class="right menu">
+            {% if user.is_authenticated %}
+            <div class="ui dropdown item">
+                {{ user.username }} <i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item" href="{% url 'clusters' %}">我的集群</a>
+                    <a class="item" href="{% url 'logout' %}">退出</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="item">
+                <a class="ui primary button" href="{% url 'login' %}">登录</a>
+            </div>
+            <div class="item">
+                <a class="ui primary button" href="{% url 'register' %}">注册</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div style="height: 60px;"></div>

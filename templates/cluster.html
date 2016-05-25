@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    我的集群
+{% endblock %}
+
+
+{% block content %}
+    <div class="ui sidebar inverted vertical menu visible" style="width: 250px;">
+        <div class="item">
+            <h3 class="ui header grey inverted">集群管理</h3>
+            <div class="menu">
+                <div class="item">名称：{{ name }}</div>
+                <div class="item">时间：{{ created | date:"Y/m/d " }}{{ created | time:"H:i" }}</div>
+            </div>
+        </div>
+        {% for m in managements %}
+            {% if m.subitems %}
+                <div class="item" >
+                    <div class="header">{{ m.name }}</div>
+                    <div class="menu">
+                        {% for i in m.subitems %}
+                            <a class="item" data-value="{{ i.url }}">{{ i.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <a class="item" data-value="{{ m.url }}">{{ m.name }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div style="margin-left: 250px; min-width: 960px; height: 99%; background-color: white">
+        <iframe id="management" src="" style="width: 100%; height: 100%; border:none"></iframe>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function() {
+            var $items = $('.ui.sidebar a.item')
+            var $allItems = $('.ui.sidebar .item')
+            var $iframe = $('#management')
+
+            $items.first().addClass('active')
+            $iframe.attr('src', $items.first().attr('data-value'))
+
+            $items.click(function(event) {
+                $iframe.attr('src', $(this).attr('data-value'))
+                $allItems.removeClass('active')
+                $(this).addClass('active')
+                        .parents('.item')
+                        .addClass('active')
+            })
+        })
+    </script>
+{% endblock %}

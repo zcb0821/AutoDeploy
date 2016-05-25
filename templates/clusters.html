@@ -1,0 +1,20 @@
+{%  extends 'base.html' %}
+
+{% block title %}
+    我的集群
+{% endblock %}
+
+
+{% block content %}
+    {% include 'topbar.html' %}
+    <cluster-manage></cluster-manage>
+{% endblock %}
+
+{% block script %}
+    <script src="/static/vue-ui/dist/build.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.ui.fixed.top.menu .dropdown').dropdown()
+        });
+    </script>
+{% endblock %}

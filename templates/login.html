@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    登录
+{% endblock %}
+
+{% block content %}
+    <br><br><br>
+    <div class="ui middle aligned center aligned grid">
+        <div class="column" id="login" style="max-width: 450px;">
+            <h2 class="ui blue image header">
+                <a href="{% url 'index' %}">大数据应用系统开发运行平台</a>
+            </h2>
+            {% if message %}
+                {% if message.error %}
+                    <div class="ui error message" >
+                        {{ message.error }}
+                    </div>
+                {% elif message %}
+                    <div class="ui success message" >
+                        {{ message.success }}
+                    </div>
+                {% endif %}
+            {% endif %}
+            <form class="ui large form" method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="ui stacked segment">
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="username" placeholder="用户名">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="password" placeholder="密码">
+                        </div>
+                    </div>
+                    <input type="submit" value="登录" class="ui fluid large blue submit button">
+                </div>
+
+                <div class="ui error message"></div>
+
+            </form>
+
+            <div class="ui message">
+                还没有帐号？ <a href="{% url 'register' %}">注册</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

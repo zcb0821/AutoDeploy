@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    大数据应用系统开发运行平台
+{% endblock %}
+
+{% block content %}
+    {% include 'topbar.html' %}
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            $('.ui.fixed.top.menu .dropdown').dropdown()
+        });
+    </script>
+{% endblock %}
