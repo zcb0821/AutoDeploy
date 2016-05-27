@@ -11,7 +11,7 @@
                     <input type="text" v-model="param.value" name="{{param.name}}" v-if="param.type=='txt' || param.type=='number'">
 
                     <!-- btn_enum -->
-                    <button-select :options="param.options" :value.sync="param.value"></button-select>
+                    <button-select :options="param.options" :value.sync="param.value" v-if="param.type=='btn_enum'"></button-select>
 
                     <!-- boolean -->
                     <div class="ui toggle checkbox" v-if="param.type=='boolean'">
@@ -30,7 +30,7 @@
     function HWParams() {
         return {
             title: '硬件',
-            name: 'hardware',
+            name: 'Hardware',
             paramlist: [{
                 title: '节点数',
                 name: "nodeNumber",
@@ -66,7 +66,8 @@
 
     function LinuxParams() {
         return {
-            name: "linux",
+            name: "Linux",
+            title: 'Linux 系统',
             paramlist: [{
                 type: 'number',
                 name: 'file_max',
@@ -97,9 +98,10 @@
     }
 
     import ButtonSelect from '../basic/button-selection.vue'
+    import Dropdown from '../basic/dropdown.vue'
 
     export default {
-        components: {ButtonSelect},
+        components: {ButtonSelect, Dropdown},
         data () {
             return {
                 systemConfigs: [HWParams(), LinuxParams()],
@@ -109,7 +111,11 @@
             }
         },
         watch: {
-
+            systemConfigs: function() {
+                this.$nextTick(function () {
+                    $(this.$el).find('.ui.checkbox').checkbox()
+                })
+            }
         },
         methods: {
             // dom events
@@ -145,23 +151,14 @@
                 if (data && data.paramgroup) {
                     var paramgroup = data.paramgroup
                     for (var i = 0; i < paramgroup.length; i++) {
-                        paramgroup[i].name = paramgroup[i].systemname;
-                        for (j in paramgroup[i].paramlist) {
-                            if (!paramgroup[i].paramlist[j].value) {
-                                switch (paramgroup[i].paramlist[j].type) {
-                                    case 'txt':
-                                        paramgroup[i].paramlist[j].value = '0';
-                                        break;
-                                    case 'boolean':
-                                        paramgroup[i].paramlist[j].value = false;
-                                        break;
-                                    case 'enum':
-                                        paramgroup[i].paramlist[j].value = paramgroup[i].paramlist[j].selections[0];
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
+                        paramgroup[i].name = paramgroup[i].systemname
+                        paramgroup[i].title = paramgroup[i].showname ? paramgroup[i].showname : paramgroup[i].systemname
+
+                        var plist = paramgroup[i].paramlist
+                        for (var j in plist) {
+                            plist[j].title = plist[j].showname ? plist[j].showname : plist[j].name
+                            plist[j].value = plist[j].defaultval
+                            plist[j].options = plist[j].selections
                         }
                         this.systemConfigs.push(paramgroup[i]);
                     }

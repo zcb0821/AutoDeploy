@@ -96,8 +96,8 @@
             },
             init: function(data) {
                 if (data) {
-                    this.systems.storage = data.storage
-                    this.systems.compute = data.compute
+                    this.systems.storage = data.storage ? data.storage : []
+                    this.systems.compute = data.compute ? data.compute : []
                 }
             },
             requestData () {

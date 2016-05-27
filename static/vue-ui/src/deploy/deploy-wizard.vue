@@ -1,7 +1,9 @@
 <template>
-    <div class="ui long modal" id="new-deployment-model">
-        <i class="close icon"></i>
-        <div class="header">添加集群</div>
+    <div class="ui modal" id="new-deployment-model">
+        <div class="header">
+            添加集群
+            <i class="close icon" v-on:click="close"></i>
+        </div>
         <div class="content">
             <div class="ui ordered four steps">
                 <div class="step" :class="{active: $index==state.activeStep, completed: $index < state.activeStep}"
@@ -9,6 +11,11 @@
                     <div class="content">
                         <div class="title">{{step.title}}</div>
                     </div>
+                </div>
+            </div>
+            <div class="ui message error" v-show="errors.length > 0">
+                <div class="ui bulleted list">
+                    <div class="item" v-for="error in errors">{{error}}</div>
                 </div>
             </div>
             <info v-show="steps[state.activeStep].title=='基本信息'" v-ref:info :name.sync="name"></info>
@@ -52,7 +59,8 @@
                 }, {
                     title: '参数配置',
                     skippable: false
-                }]
+                }],
+                errors: []
             }
         },
         computed: {
@@ -85,11 +93,16 @@
         },
         events: {
             error (message) {
-                this.errorMessage = message
+                if (message instanceof Array) {
+                    this.errors = this.errors.concat(message)
+                } else if (message instanceof String) {
+                    this.errors.push(message)
+                }
             }
         },
         methods: {
             stepBackward: function () {
+                this.errors = []
                 if (this.state.activeStep > 0) {
                     this.state.activeStep--
                 }
@@ -100,6 +113,7 @@
             willStepForward () {
                 var vm = this
                 if (vm.activeComponent.isCompleted()) {
+                    vm.errors = []
                     switch (vm.steps[vm.state.activeStep].title) {
                         case '基本信息':
                             vm.stepForward()
@@ -107,21 +121,46 @@
                         case '辅助选型':
                             var data = vm.activeComponent.requestData()
                             data.id = vm.id
-                            $.post('/rest/assist/', data, function (response) {
-                                if (!response.error) {
-                                    vm.stepForward(response)
-                                }
-                            }, 'json')
+                            $.ajax({
+                                url: "/rest/assist/",
+                                method: 'POST',
+                                data: JSON.stringify(data),
+                                success: function (response) {
+                                    if (typeof(response) === 'string') {
+                                        response = JSON.parse(response)
+                                    }
+                                    if (!response.error) {
+                                        vm.stepForward(response)
+                                    }
+                                },
+                                contentType: 'application/json',
+                                dataType: 'json'
+                            })
                             break
                         case '构件选择':
-                            var data = vm.activeComponent.requestData()
-                            data.id = vm.id
-                            this.systems = data
-                            $.post("/rest/selectsystem/", data, function (response) {
-                                if (!response.error) {
-                                    vm.stepForward(response)
-                                }
-                            }, 'json')
+                            vm.systems = vm.activeComponent.requestData()
+                            data = {
+                                id: vm.id,
+                                storage: vm.systems.storage,
+                                compute: vm.systems.compute
+                            }
+                            $.ajax({
+                                url: "/rest/selectsystem/",
+                                method: 'POST',
+                                data: JSON.stringify(data),
+                                success: function (response) {
+                                    if (typeof(response) === 'string') {
+                                        response = JSON.parse(response)
+                                    }
+                                    if (!response.error) {
+                                        vm.stepForward(response)
+                                        vm.errors.push('sdlfj')
+                                        vm.errors.push(response.error)
+                                    }
+                                },
+                                contentType: 'application/json',
+                                dataType: 'json'
+                            })
                             break
                         case '参数配置':
                             var data = {
@@ -166,11 +205,6 @@
                     $(this.$el).modal('refresh')
                 })
             },
-            newCluster () {
-                return {
-                    name: ''
-                }
-            },
             init () {
                 var vm = this
                 this.state.activeStep = 0
@@ -187,10 +221,17 @@
                         .modal('setting', 'detachable', false)
                         .modal('setting', 'offset', 300)
                         .modal('show')
+            },
+            close () {
+                $(this.$el).modal('hide')
             }
         }
     }
 </script>
 
 <style>
+    .ui.modal .header .close  {
+        float: right;
+        cursor: pointer;
+    }
 </style>

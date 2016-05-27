@@ -20,7 +20,7 @@ Vue.filter('integer', {
     // model -> view
     // 在更新 `<input>` 元素之前格式化值
     read: function (val) {
-        return val != null ? val.toString() : '请输入整数'
+        return val != null ? val.toString() : ''
     },
     // view -> model
     // 在写回数据之前格式化值

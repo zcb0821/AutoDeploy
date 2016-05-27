@@ -1,8 +1,8 @@
 <template>
-    <div class="field">
+    <div class="field" :class="{error: error}">
         <label> {{ fieldLabel }} </label>
         <!-- integer -->
-        <input type="text" v-model="param.value | integer" name="{{param.name}}" v-if="param.type=='integer'">
+        <input type="text" v-model="param.value | integer" placeholder="请输入整数" name="{{param.name}}" v-if="param.type=='integer'">
 
         <!-- boolean -->
         <div class="ui toggle checkbox" v-if="param.type=='boolean'">
@@ -12,17 +12,24 @@
 
         <!-- single -->
         <dropdown :options="param.options" :value.sync="param.value" v-if="param.type=='single'"></dropdown>
+        <p class="error">{{ error }}</p>
     </div>
 </template>
 
 <script>
     import Dropdown from '../basic/dropdown.vue'
+    import VueInput from '../basic/vue-input.vue'
 
     export default {
-        components: {Dropdown},
+        components: {Dropdown, VueInput},
         props: {
             param: {
                 required: true
+            },
+            canBlank: {
+                default () {
+                    return true
+                }
             }
         },
         computed: {
@@ -33,12 +40,23 @@
         },
         data () {
             return {
-
+                error: ''
+            }
+        },
+        events: {
+            'error': function (message) {
+                this.error = message
             }
         }
     }
 </script>
 
 <style>
-
+    .field > p {
+        margin-top: 6px;
+        margin-left: 10px;
+    }
+    .filed > p.error {
+        color: #9f3a38;
+    }
 </style>
